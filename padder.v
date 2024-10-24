@@ -9,7 +9,7 @@ module padder(
     output [63:0]out,
     output reg out_ready,
     input is_last,
-    input mode,
+    input[1:0] mode,
     output reg ack,
     output cntr_zero
     );
