@@ -31,17 +31,27 @@ module SIPO (
     output reg [1343:0] data_out
     );
     
+    reg is_loaded_temp;
+
     always @ (posedge clk, posedge hash_init) begin
-        if (hash_init) data_out <= 0;
+        if (hash_init) begin
+            data_out <= 0;
+            is_loaded_temp <= 0;
+        end
         else begin
             if (load_en) begin
-                data_out <= data_out << `DATA_SIZE;
-                data_out[`DATA_SIZE-1:0] <= data_in;
-                if (cntr_zero) is_loaded <= 1;
-                else is_loaded <= 0; 
+                data_out <= data_out >> `DATA_SIZE;
+                data_out[1343-:`DATA_SIZE] <= data_in;
+                if (cntr_zero) is_loaded_temp <= 1;
+                else is_loaded_temp <= 0; 
             end
             else data_out <= data_out;
         end
+    end
+
+    always @ (posedge clk, posedge hash_init) begin
+        if (hash_init) is_loaded <= 0;
+        else is_loaded <= is_loaded_temp;
     end
     
 endmodule

@@ -1,6 +1,4 @@
 
-// `include "round.v"
-// `include "rconst.v"
 
 module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze);
     input               clk, reset;
@@ -19,24 +17,27 @@ module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze)
     wire                update;
     wire                accept;
     reg                 calc; /* == 1: calculating rounds */
+    wire [23:0]              round_var;
 
     assign accept = in_ready & (~ calc); // in_ready & (i == 0)
     
     always @ (posedge clk)
       if (reset) i <= 0;
-      else       i <= {i[21:0], accept|squeeze};
+      else       i <= {i[21:0], accept|(squeeze&~calc)};
     
     always @ (posedge clk)
       if (reset) calc <= 0;
-      else       calc <= (calc & (~ i[22])) | accept;
+      else       calc <= (calc & (~ i[22])) | accept | (squeeze & ~calc & ~in_ready);
     
     assign update = calc | accept;
 
     assign ack = accept;
 
     always @ (posedge clk)
-      if (reset)
+      if (reset) begin
         out_ready <= 0;
+        calc <= 0;
+      end
       else if (accept)
         out_ready <= 0;
       else if (i[22]) // only change at the last round
@@ -58,8 +59,9 @@ module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze)
       end
     end
 
+    assign round_var = {i, accept};
     rconst
-      rconst_ ({i, accept}, rc);
+      rconst_ (round_var, rc);
 
     round
       round_ (round_in, rc, round_out);

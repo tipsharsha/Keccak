@@ -1,43 +1,26 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 29.08.2024 10:53:28
-// Design Name: 
-// Module Name: PISO_reg
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
-`define DATA_SIZE 64
-
-module PISO_reg(
+module PISO(
     input [1343:0] data_in,
     input rst,
     input load_en,
     input shift_en,
     input clk,
+    input count_zero,
     output out_ready,
-    
-    output [`DATA_SIZE-1:0] data_out
+    output [`DATA_SIZE-1:0] data_out,
+    output pack
     );
     
     reg [1343:0] data;
     reg out_ready;
-    
+
+    assign pack = load_en; 
     
     always @ (posedge clk, posedge rst) begin
-        if (rst) data <= 0;
+        if (rst|count_zero) begin
+            data <= 0;
+        end
         else begin
             if(load_en)
                 data <= data_in;
