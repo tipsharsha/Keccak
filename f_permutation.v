@@ -1,6 +1,6 @@
 
 
-module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze);
+module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze, pack);
     input               clk, reset;
     input      [1343:0]  in;
     input               in_ready;
@@ -9,6 +9,7 @@ module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze)
     output reg          out_ready;
     input[1:0] mode;
     input squeeze;
+    input pack;
 
     reg        [22:0]   i; /* select round constant */
     reg       [1599:0] round_in;
@@ -38,7 +39,7 @@ module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze)
         out_ready <= 0;
         calc <= 0;
       end
-      else if (accept)
+      else if (accept | pack)
         out_ready <= 0;
       else if (i[22]) // only change at the last round
         out_ready <= 1;

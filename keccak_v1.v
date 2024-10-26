@@ -81,7 +81,8 @@ module keccak(
         .ack(f_ack),
         .out(f_out),
         .out_ready(f_out_ready),
-        .squeeze(squeeze)
+        .squeeze(squeeze),
+        .pack(pack)
     );
 
     PISO piso(
@@ -92,7 +93,7 @@ module keccak(
         .shift_en(shift_en),
         .clk(clk),
         .out_ready(p_out_ready),
-        .data_out(p_out)
+        .data_out(p_out),
         .pack(pack)
     );
     
@@ -144,10 +145,10 @@ module keccak(
         
     end
 
-    assign cunt_zero = cntr_out==0;
+    assign cunt_zero = (cntr_out==1 | cntr_out==0);
 
     // assign out_ready = out_read & ~out_buf_empty;
-    assign out_ready = ~out_buf_empty;
+    assign out_ready = ~out_buf_empty ;
     assign shift_en = ~buf_ful & ~cunt_zero;
 
 endmodule

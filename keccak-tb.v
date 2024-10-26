@@ -86,10 +86,10 @@ module test_keccak;
         #(`CYCLE);
         #500;
 
-        // // Verify output buffer
-        // gimme = 1;
-        // #(`CYCLE);
-        // gimme = 0;
+        // Verify output buffer
+        gimme = 1;
+        #100;
+        
 
         // // Stage 3: Verify the output matches the expected hash
         // // if (out !== 64'hExpectedHashValue) error;

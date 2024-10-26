@@ -18,7 +18,7 @@ module PISO(
     assign pack = load_en; 
     
     always @ (posedge clk, posedge rst) begin
-        if (rst|count_zero) begin
+        if (rst) begin
             data <= 0;
         end
         else begin
