@@ -46,6 +46,8 @@ module keccak(
     reg[4:0] cntr_out;
     wire cunt_zero;//outside FIFO counter
     wire pack;
+    wire calc;
+    reg last_in;
 
     padder pad(
         .in_valid(in_valid),
@@ -70,7 +72,9 @@ module keccak(
         .clk(clk),
         .cntr_zero(cntr_zero),
         .is_loaded(is_loaded),
-        .data_out(f_in));
+        .data_out(f_in),
+        .calc(calc)
+    );
 
     f_permutation f(
         .mode(mode_reg),
@@ -82,7 +86,10 @@ module keccak(
         .out(f_out),
         .out_ready(f_out_ready),
         .squeeze(squeeze),
-        .pack(pack)
+        .pack(pack),
+        .calc_out(calc),
+        .last_in(last_in)
+
     );
 
     PISO piso(
@@ -141,8 +148,12 @@ module keccak(
                 2: cntr_out <= 21;
                 3: cntr_out <= 17;
             endcase
-        end
-        
+        end  
+    end
+
+    always @(posedge clk,posedge rst) begin
+        if(rst|start_calc) last_in<=0;
+        else if(is_loaded & ~takein) last_in<=1;
     end
 
     assign cunt_zero = (cntr_out==1 | cntr_out==0);

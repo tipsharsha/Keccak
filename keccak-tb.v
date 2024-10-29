@@ -73,35 +73,41 @@ module test_keccak;
 
         // Feed multiple data words
         for ( i = 0; i < 5; i = i + 1) begin
-            if (i == 4) is_last = 1; // Indicate the last word
+            // if (i == 4) is_last = 1; // Indicate the last word
             in = in + 64'h0101010101010101;
             #(`CYCLE);
         end
 
         in_valid = 0;
-        is_last = 0;
+        // is_last = 0;
         #100;
         // Wait for f_permutation to complete and check out_ready and out values
-        wait (out_ready == 1);
+        // wait (out_ready == 1);
         #(`CYCLE);
         #500;
 
         // Verify output buffer
-        gimme = 1;
-        #100;
+        // gimme = 1;
+        // #100;
         
 
         // // Stage 3: Verify the output matches the expected hash
         // // if (out !== 64'hExpectedHashValue) error;
 
         // // Additional cases: Absorb more data, toggle gimme, check buffer status
-        // for (j = 0; j < 10; j = j + 1) begin
-        //     in = in + 64'h0202020202020202;
-        //     in_valid = 1;
-        //     #(`CYCLE);
-        //     in_valid = 0;
-        // end
-
+        wait(ack == 0);
+        for (j = 0; j < 12; j = j + 1) begin
+            if(j == 11) is_last = 1;
+            in = in + 64'h0202020202020202;
+            in_valid = 1;
+            #(`CYCLE);
+            wait(ack == 1);
+            is_last = 0;
+            in_valid = 0;
+        end
+        #200;
+        gimme=1;
+        #1000;
         // // Wait for buffer to fill and empty
         // wait (out_buf_empty == 1);
         // #(`CYCLE);
