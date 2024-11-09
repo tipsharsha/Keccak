@@ -48,6 +48,7 @@ module keccak(
     wire pack;
     wire calc;
     reg last_in;
+    reg absorb_done;
 
     padder pad(
         .in_valid(in_valid),
@@ -88,8 +89,8 @@ module keccak(
         .squeeze(squeeze),
         .pack(pack),
         .calc_out(calc),
-        .last_in(last_in)
-
+        .last_in(last_in),
+        .first_last(is_loaded & ~takein_reg)
     );
 
     PISO piso(
@@ -115,7 +116,7 @@ module keccak(
         .buf_full(buf_ful)); 
 
     assign hash_init = rst | start_calc;
-    assign squeeze = gimme & out_buf_empty  & ~shift_en;
+    assign squeeze = gimme & out_buf_empty  & ~shift_en & absorb_done &mode_reg[1];
     // assign absorb = 1;
 
    
@@ -149,6 +150,10 @@ module keccak(
                 3: cntr_out <= 17;
             endcase
         end  
+    end
+    always @ (posedge clk, posedge rst) begin
+        if(rst) absorb_done<=0;
+        else if(f_out_ready) absorb_done<=1;
     end
 
     always @(posedge clk,posedge rst) begin

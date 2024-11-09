@@ -87,7 +87,7 @@ module test_keccak;
         #500;
 
         // Verify output buffer
-        // gimme = 1;
+        gimme = 1;
         // #100;
         
 

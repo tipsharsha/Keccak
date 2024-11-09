@@ -1,6 +1,6 @@
 
 
-module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze, pack,calc_out,last_in);
+module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze, pack,calc_out,last_in,first_last);
     input               clk, reset;
     output calc_out;
     input      [1343:0]  in;
@@ -12,6 +12,7 @@ module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze,
     input squeeze;
     input pack;
     input last_in;
+    input first_last;
 
     reg        [22:0]   i; /* select round constant */
     reg       [1599:0] round_in;
@@ -83,7 +84,7 @@ module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze,
       if (reset)
         last_in_reg <= 0;
       else if (accept)
-        last_in_reg <= last_in;
+        last_in_reg <= last_in|first_last;
     end
 
     assign round_var = {i, accept};
