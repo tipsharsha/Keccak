@@ -152,7 +152,7 @@ module keccak(
         end  
     end
     always @ (posedge clk, posedge rst) begin
-        if(rst) absorb_done<=0;
+        if(rst|start_calc) absorb_done<=0;
         else if(f_out_ready) absorb_done<=1;
     end
 
