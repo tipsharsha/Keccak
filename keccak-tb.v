@@ -15,7 +15,7 @@ module test_keccak;
     // Outputs
     wire ack;
     wire [63:0] out;
-    wire out_ready;
+    wire out_valid;
     wire out_buf_empty;
 
     // Instantiate the Unit Under Test (UUT)
@@ -30,8 +30,7 @@ module test_keccak;
         .ack(ack),
         .in_valid(in_valid),
         .out(out),
-        .out_ready(out_ready),
-        .out_buf_empty(out_buf_empty)
+        .out_valid(out_valid)
     );
 
     // Clock generation
@@ -62,9 +61,9 @@ module test_keccak;
         in_valid = 1;
         #(`CYCLE);
 
-        // Check ack and out_ready should be 0 initially
+        // Check ack and out_valid should be 0 initially
         if (ack != 0) error;
-        if (out_ready !== 0) error;
+        if (out_valid !== 0) error;
 
         // Stage 2: Input valid data to padder
         start_calc = 0;
@@ -81,8 +80,8 @@ module test_keccak;
         in_valid = 0;
         // is_last = 0;
         #100;
-        // Wait for f_permutation to complete and check out_ready and out values
-        // wait (out_ready == 1);
+        // Wait for f_permutation to complete and check out_valid and out values
+        // wait (out_valid == 1);
         #(`CYCLE);
         #500;
 

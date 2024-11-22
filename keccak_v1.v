@@ -14,8 +14,7 @@ module keccak(
     output ack,
     input in_valid,//total goes to padding
     output [63:0] out,
-    output out_ready,
-    output out_buf_empty // Output FIFO is empty
+    output out_valid
     );
 
     wire[63:0] pad_out;
@@ -44,11 +43,12 @@ module keccak(
     assign load_en = pad_out_ready & ~f_ack;
     wire hash_init;
     reg[4:0] cntr_out;
-    wire cunt_zero;//outside FIFO counter
+    wire out_count_zero;//outside FIFO counter
     wire pack;
     wire calc;
     reg last_in;
     reg absorb_done;
+    wire out_buf_empty;
 
     padder pad(
         .in_valid(in_valid),
@@ -95,7 +95,7 @@ module keccak(
 
     PISO piso(
         .data_in(f_out[1599-:1344]),
-        .count_zero(cunt_zero),
+        .count_zero(out_count_zero),
         .rst(rst),
         .load_en(f_out_ready),
         .shift_en(shift_en),
@@ -113,7 +113,9 @@ module keccak(
         .wr_en(p_out_ready), 
         .rd_en(gimme), 
         .buf_empty(out_buf_empty), 
-        .buf_full(buf_ful)); 
+        .buf_full(buf_ful)
+        ,.out_valid(out_valid)
+        ); 
 
     assign hash_init = rst | start_calc;
     assign squeeze = gimme & out_buf_empty  & ~shift_en & absorb_done &mode_reg[1];
@@ -161,10 +163,9 @@ module keccak(
         else if(is_loaded & ~takein) last_in<=1;
     end
 
-    assign cunt_zero = (cntr_out==1 | cntr_out==0);
+    assign out_count_zero = (cntr_out==1 | cntr_out==0);
 
     // assign out_ready = out_read & ~out_buf_empty;
-    assign out_ready = ~out_buf_empty ;
-    assign shift_en = ~buf_ful & ~cunt_zero;
+    assign shift_en = ~buf_ful & ~out_count_zero;
 
 endmodule
