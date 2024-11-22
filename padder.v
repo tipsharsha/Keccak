@@ -33,8 +33,8 @@ module padder(
         end
         else if ( ((start_calc | (takein & (cntr == 0))) & in_valid) & ~rst) begin
             case(mode)
-                    0: cntr <= 9;
-                    1: cntr <= 17;
+                    0: cntr <= 17;
+                    1: cntr <= 9;
                     2: cntr <= 21;
                     3: cntr <= 17;
             endcase
@@ -50,7 +50,7 @@ module padder(
             pad_out<=0;
             ack <= 0;
         end
-        else if(in_valid & ~is_last & cntr!=0) begin
+        else if(in_valid & ((~is_last & cntr!=0))) begin
             pad_out <= in;
             // out_ready <= 1;
             ack <= 1;
@@ -107,7 +107,7 @@ module padder(
         if(rst) begin
             pad <= 0;
         end
-        else if(is_last) begin
+        else if(is_last & cntr>1) begin
             pad <= 1;
         end
         else if(cntr == 1 | cntr==0) begin
@@ -118,7 +118,7 @@ module padder(
         if(rst) begin
             out_ready <= 0;
         end
-        else if(pad | in_valid) begin
+        else if((pad | in_valid)&cntr!=0) begin
             out_ready <= 1;
         end
         else if(~pad & ~in_valid) begin

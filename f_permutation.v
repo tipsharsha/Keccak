@@ -69,8 +69,8 @@ module f_permutation(mode,clk, reset, in, in_ready, ack, out, out_ready,squeeze,
     always @ (*) begin
       if (accept) begin
         case(mode)
-          0: round_in = {in[575:0] ^ out[1599:1599-575], out[1599-576:0]};
-          1: round_in = {in[1087:0] ^ out[1599:1599-1087], out[1599-1088:0]};
+          0: round_in = {in[1087:0] ^ out[1599:1599-1087], out[1599-1088:0]};
+          1: round_in = {in[575:0] ^ out[1599:1599-575], out[1599-576:0]};
           2: round_in = {in ^ out[1599:1599-1343], out[1599-1344:0]};
           3: round_in = {in[1087:0] ^ out[1599:1599-1087], out[1599-1088:0]};
         endcase

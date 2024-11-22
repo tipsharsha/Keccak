@@ -107,6 +107,58 @@ module test_keccak;
         #200;
         gimme=1;
         #1000;
+        start_calc = 1;
+        mode = 2'b10; // Example mode
+        in = 64'hF0E1D2C3B4A59687;
+        in_valid = 1;
+        #(`CYCLE);
+
+        // Check ack and out_valid should be 0 initially
+        if (ack != 0) error;
+        if (out_valid !== 0) error;
+
+        // Stage 2: Input valid data to padder
+        start_calc = 0;
+        in_valid = 1;
+        #(`CYCLE);
+
+        // Feed multiple data words
+        for ( i = 0; i < 5; i = i + 1) begin
+            // if (i == 4) is_last = 1; // Indicate the last word
+            in = in + 64'h0101010101010101;
+            #(`CYCLE);
+        end
+
+        in_valid = 0;
+        // is_last = 0;
+        #100;
+        // Wait for f_permutation to complete and check out_valid and out values
+        // wait (out_valid == 1);
+        #(`CYCLE);
+        #500;
+
+        // Verify output buffer
+        gimme = 1;
+        // #100;
+        
+
+        // // Stage 3: Verify the output matches the expected hash
+        // // if (out !== 64'hExpectedHashValue) error;
+
+        // // Additional cases: Absorb more data, toggle gimme, check buffer status
+        wait(ack == 0);
+        for (j = 0; j < 3; j = j + 1) begin
+            if(j == 2) is_last = 1;
+            in = in + 64'h0202020202020202;
+            in_valid = 1;
+            #(`CYCLE);
+            wait(ack == 1);
+            is_last = 0;
+            in_valid = 0;
+        end
+        #200;
+        gimme=1;
+        #1000;
         // // Wait for buffer to fill and empty
         // wait (out_buf_empty == 1);
         // #(`CYCLE);
